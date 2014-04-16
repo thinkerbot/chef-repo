@@ -1,10 +1,16 @@
-Setup:
+# Chef-Repo
 
-   vagrant up chef-server
+Cookbooks and examples.
+
+## Setup
+
+Create the server:
+
+    vagrant up chef-server
 
 Now that the server is set up, go to:
 
-   https://$(grep 'chef-server.example.com' vm/config/hosts | tail -n 1 | awk '{ print $1 }')
+    https://$(grep 'chef-server.example.com' vm/config/hosts | tail -n 1 | awk '{ print $1 }')
 
 Login as (admin, p@ssw0rd1) and regenerate the admin.pem and
 chef-validator.pem files; the you will be prompted to create the admin.pem on
@@ -18,10 +24,10 @@ Put them into vm/tmp. Also add the identify file to ssh to the vagrant boxes
 
 Now setup the workstation and a node:
 
-   vagrant up chef-workstation
-   vagrant up chef-node
+    vagrant up chef-workstation
+    vagrant up chef-node
 
 Then provisions the node from the workstation.
 
-   vagrant ssh chef-workstation
-   knife bootstrap chef-node.example.com -x vagrant -i ~/.ssh/chef-node.pem -N node1 --sudo
+    vagrant ssh chef-workstation
+    knife bootstrap chef-node.example.com -x vagrant -i ~/.ssh/chef-node.pem -N node1 --sudo

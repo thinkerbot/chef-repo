@@ -39,7 +39,7 @@ locally on the Vagrant virtual machines)...
     cd /vagrant
     bundle exec berks
     bundle exec berks upload
-    knife bootstrap chef-node.example.com -x vagrant -i ~/.ssh/chef-node.pem -N node1 --sudo --run-list "role[memcached]"
+    knife bootstrap chef-node.example.com -x vagrant -i ~/.ssh/chef-node.pem -N node1 --sudo --run-list "role[ts]"
 
 Note that to get the upload to succeed you have to modify the following file
 after `berks`. See https://github.com/berkshelf/berkshelf/issues/1019
@@ -55,3 +55,19 @@ after `berks`. See https://github.com/berkshelf/berkshelf/issues/1019
       "redhat": ">= 0.0.0"
     }
     ...
+
+To check it works:
+
+    echo stats | nc chef-node.example.com 11211
+
+## Example (ts)
+
+An example of a custom cookbook:
+
+    knife cookbook upload ts
+    knife bootstrap chef-node.example.com -x vagrant -i ~/.ssh/chef-node.pem -N node3 --sudo --run-list "role[ts]"
+
+To check it works:
+
+    vagrant ssh chef-node
+    ts -h

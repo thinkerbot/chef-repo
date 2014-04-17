@@ -1,6 +1,8 @@
 .DS_Store
 .rake_test_cache
 .vagrant
+.bundle
+.berkshelf
 
 ###
 # Ignore Chef key files and secrets
@@ -9,6 +11,7 @@
 .chef/encrypted_data_bag_secret
 
 ###
-# Ignore VM temp files
+# Ignore Project files
 ###
-vm/tmp
+/vm/tmp
+/vendor

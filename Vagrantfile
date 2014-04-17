@@ -30,6 +30,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     workstation.vm.hostname = "chef-workstation.example.com"
     workstation.vm.network :private_network, ip: hosts["chef-workstation.example.com"]
     workstation.vm.provision :shell, :path => "vm/workstation/setup.sh"
+    workstation.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--cpus", 2, "--memory", 1024]
+    end
   end
 
   config.vm.define "chef-node" do |node|
@@ -38,6 +41,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     node.vm.hostname = "chef-node.example.com"
     node.vm.network :private_network, ip: hosts["chef-node.example.com"]
     node.vm.provision :shell, :path => "vm/node/setup.sh"
+    node.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--cpus", 2, "--memory", 1024]
+    end
   end
 
   # The url from where the 'config.vm.box' box will be fetched if it

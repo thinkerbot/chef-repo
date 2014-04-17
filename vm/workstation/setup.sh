@@ -21,16 +21,16 @@ fi
 #############################################
 
 apt-get update
-apt-get -y install expect curl git
+apt-get -y install expect curl git vim
 
 if ! [ -e chef_11.12.2-1_amd64.deb ]
 then curl -O https://opscode-omnibus-packages.s3.amazonaws.com/ubuntu/12.04/x86_64/chef_11.12.2-1_amd64.deb
 fi
-sudo dpkg -i chef_11.12.2-1_amd64.deb
+dpkg -i chef_11.12.2-1_amd64.deb
 
 # https://tickets.opscode.com/browse/CHEF-5211
 # https://github.com/opscode/chef/pull/1375/files
-sudo sed -i.bak -e '
+sed -i.bak -e '
 155 a\
         o.load_plugins
 ' /opt/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-11.12.2/lib/chef/knife/configure.rb
@@ -43,7 +43,7 @@ cp /vagrant/vm/tmp/chef-node.pem /home/vagrant/.ssh
 chown vagrant:vagrant /home/vagrant/.ssh/chef-node.pem
 chmod 600 /home/vagrant/.ssh/chef-node.pem
 
-rm -f /home/vagrant/.chef/knife.rb
+rm -r /home/vagrant/.chef
 sudo -i -u vagrant expect - <<DOC
 spawn knife configure --initial
 expect -ex "Where should I put the config file" { send "/home/vagrant/.chef/knife.rb\r" }
@@ -58,3 +58,27 @@ expect -ex "Please enter a password for the new user:" { send "sup3rsecure\r" }
 expect -ex "Configuration file written"
 wait
 DOC
+
+#############################################
+apt-get -y install ruby1.9.3 build-essential libopenssl-ruby1.9.1 libssl-dev zlib1g-dev
+gem install bundler -v 1.6.2
+
+# The libgecode stuff is needed because dep-selector-libgecode does not
+# compile properly as of this momement, so instead use the package install
+# (which I hope is the correct 3.x version instead of the 4.x version, but I
+# can't figure out how to verify that).
+apt-get -y install libgecode-dev
+cd /vagrant
+sudo -u vagrant USE_SYSTEM_GECODE=1 bundle install --path vendor
+
+# Shennanigans to get past the fact the chef-server in this example does not
+# have an ssl cert: https://github.com/berkshelf/berkshelf#ssl-errors
+mkdir -p /vagrant/.berkshelf
+cat > /vagrant/.berkshelf/config.json <<DOC
+{
+  "ssl": {
+    "verify": false
+  }
+}
+DOC
+chown -R vagrant:vagrant /vagrant/.berkshelf

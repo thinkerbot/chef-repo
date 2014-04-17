@@ -71,3 +71,20 @@ To check it works:
 
     vagrant ssh chef-node
     ts -h
+
+## Example (EC2)
+
+Setup and provision on EC2.
+
+    ec2-create-keypair example | sed -ne '2,$p' > ~/.ssh/example.pem
+    chmod 400 ~/.ssh/example.pem
+
+    ec2-create-group example-group -d "Example security group"
+    ec2-authorize example-group -p 22 -s 0.0.0.0/0
+
+    # Ubuntu Server 12.04 LTS
+    instance="$(ec2-run-instances ami-fa9cf1ca -t m3.medium -k example -g example-group | awk '/^INSTANCE/ { print $2 }')"
+    instance_host_name="$(ec2-describe-instances "$instance" | awk '/^INSTANCE/ { print $4 }')"
+    ssh -i ~/.ssh/example.pem ubuntu@"$instance_host_name"
+    ec2-terminate-instances "$instance"
+

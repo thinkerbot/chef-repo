@@ -82,3 +82,28 @@ cat > /vagrant/.berkshelf/config.json <<DOC
 }
 DOC
 chown -R vagrant:vagrant /vagrant/.berkshelf
+
+#############################################
+cd /vagrant/vm/tmp
+apt-get install -y openjdk-7-jre unzip
+
+if ! [ -e ec2-api-tools.zip ]
+then curl -O http://s3.amazonaws.com/ec2-downloads/ec2-api-tools.zip
+fi
+rm -rf /usr/local/ec2
+mkdir -p /usr/local/ec2
+unzip ec2-api-tools.zip -d /usr/local/ec2
+
+sed -i -e '/EC2-start/,/EC2-stop/d' /home/vagrant/.profile
+cat >> /home/vagrant/.profile <<"DOC"
+## EC2-start
+export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64/jre
+export EC2_HOME=/usr/local/ec2/$(ls /usr/local/ec2)
+export PATH="$PATH:$EC2_HOME/bin"
+export AWS_ACCESS_KEY=your-aws-access-key-id
+export AWS_SECRET_KEY=your-aws-secret-key
+
+# Oregon (see ec2-describe-regions)
+export EC2_URL=https://ec2.us-west-2.amazonaws.com
+## EC2-stop
+DOC

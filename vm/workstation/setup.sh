@@ -1,6 +1,6 @@
 #!/bin/bash
 #############################################
-set -e '/chef/d' /etc/hosts
+sed -i -e '/chef/d' /etc/hosts
 cat /vagrant/vm/config/hosts >> /etc/hosts
 
 mkdir -p /vagrant/vm/tmp
@@ -41,9 +41,9 @@ chown -R vagrant:vagrant /etc/chef-server
 
 cp /vagrant/vm/tmp/chef-node.pem /home/vagrant/.ssh
 chown vagrant:vagrant /home/vagrant/.ssh/chef-node.pem
-chmod 600 /home/vagrant/.ssh/chef-node.pem
+chmod 400 /home/vagrant/.ssh/chef-node.pem
 
-rm -r /home/vagrant/.chef
+rm -rf /home/vagrant/.chef
 sudo -i -u vagrant expect - <<DOC
 spawn knife configure --initial
 expect -ex "Where should I put the config file" { send "/home/vagrant/.chef/knife.rb\r" }

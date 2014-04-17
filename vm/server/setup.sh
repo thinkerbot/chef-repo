@@ -1,6 +1,6 @@
 #!/bin/bash
 #############################################
-set -e '/chef/d' /etc/hosts
+sed -i -e '/chef/d' /etc/hosts
 cat /vagrant/vm/config/hosts >> /etc/hosts
 
 mkdir -p /vagrant/vm/tmp
